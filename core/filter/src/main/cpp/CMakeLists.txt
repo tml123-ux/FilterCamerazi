@@ -1,6 +1,5 @@
 # FilterCamera - Native库CMake配置
 # 编译美颜算法和位图处理Native库
-# 以及GPUImage YUV解码器（替代预编译版本，支持16KB对齐）
 
 cmake_minimum_required(VERSION 3.22.1)
 
@@ -23,14 +22,6 @@ add_library(
     bitmap/Conversion.cpp
 )
 
-# ========== libyuv-decoder.so - GPUImage YUV解码器 ==========
-# 替代gpuimage预编译的libyuv-decoder.so，使用16KB页面对齐
-add_library(
-    yuv-decoder
-    SHARED
-    gpuimage/yuv-decoder.c
-)
-
 # 查找NDK系统库
 find_library(
     log-lib
@@ -47,26 +38,12 @@ find_library(
     android
 )
 
-find_library(
-    GLESv2-lib
-    GLESv2
-)
-
 # 链接库 - filter
 target_link_libraries(
     filter
     ${log-lib}
     ${jnigraphics-lib}
     ${android-lib}
-)
-
-# 链接库 - yuv-decoder
-target_link_libraries(
-    yuv-decoder
-    ${log-lib}
-    ${jnigraphics-lib}
-    ${android-lib}
-    ${GLESv2-lib}
 )
 
 # 编译选项 - filter
@@ -78,24 +55,9 @@ target_compile_options(
     -ffast-math
 )
 
-# 编译选项 - yuv-decoder
-target_compile_options(
-    yuv-decoder
-    PRIVATE
-    -Wall
-    -O3
-)
-
 # 链接选项 - Android 15 (API 35+) 16KB页面大小对齐
-# 确保Native库在16KB页面设备上正常运行
 target_link_options(
     filter
-    PRIVATE
-    -Wl,-z,max-page-size=16384
-)
-
-target_link_options(
-    yuv-decoder
     PRIVATE
     -Wl,-z,max-page-size=16384
 )

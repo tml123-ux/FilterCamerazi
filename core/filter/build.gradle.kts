@@ -142,13 +142,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    // GPUImage滤镜库（仅Java类，native库被Transform剥离）
-    // gpuimage的libyuv-decoder.so未对齐16KB
-    // 本模块CMake编译了16KB对齐的替代版本 (src/main/cpp/gpuimage/yuv-decoder.c)
-    api(libs.gpuimage) {
-        // 请求使用剥离 JNI 的版本
-        attributes {
-            attribute(strippedJni, true)
-        }
-    }
+    // GPUImage滤镜库
+    api(libs.gpuimage)
 }
